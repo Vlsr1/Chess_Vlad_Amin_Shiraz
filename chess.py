@@ -11,9 +11,12 @@ WINDOW_SIZE = (WIDTH, HEIGHT)
 # Размеры клетки
 CELL_SIZE = WIDTH // 8
 
+<<<<<<< HEAD
 # Алфавит
 alph=('a','b','c','d','e','f','g','h')
 
+=======
+>>>>>>> 12ffb7795a8b4fb2270db38b79c474ffb9d15ae1
 # Цвета
 WHITE = (236, 218, 185)
 BLACK = (174, 138, 104)
@@ -52,12 +55,19 @@ board = [
 ]
 
 # Логика передвижения фигур
+<<<<<<< HEAD
 def is_valid_move(piece, start, end,side):
     sx, sy = start
     ex, ey = end
     if piece == 'P':
         if side=='BLACK':
             return False
+=======
+def is_valid_move(piece, start, end):
+    sx, sy = start
+    ex, ey = end
+    if piece == 'P':
+>>>>>>> 12ffb7795a8b4fb2270db38b79c474ffb9d15ae1
         if sx == ex and sy == 6 and ey == 4:
             return True
         if sx == ex and sy - ey==1:
@@ -65,8 +75,11 @@ def is_valid_move(piece, start, end,side):
         if abs(sx - ex) == 1 and (sy - ey) == 1 and board[ey][ex]!=None:
             return True
     elif piece == 'p':
+<<<<<<< HEAD
         if side=='WHITE':
             return False
+=======
+>>>>>>> 12ffb7795a8b4fb2270db38b79c474ffb9d15ae1
         if sx == ex and sy == 1 and ey == 3:
             return True
         if sx == ex and ey - sy == 1:
@@ -107,9 +120,12 @@ def main():
     selected_piece = None
     selected_pos = None
     running = True
+<<<<<<< HEAD
     pgn=()
     move_number=int(1)
     side='WHITE'
+=======
+>>>>>>> 12ffb7795a8b4fb2270db38b79c474ffb9d15ae1
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -122,6 +138,7 @@ def main():
                         selected_piece = board[row][col]
                         selected_pos = (col, row)
                 else:
+<<<<<<< HEAD
                     if is_valid_move(selected_piece, selected_pos, (col, row),side):
                         board[row][col] = selected_piece
                         board[selected_pos[1]][selected_pos[0]] = None
@@ -132,6 +149,11 @@ def main():
                         elif(side=='BLACK'):
                             side='WHITE'
                             move_number+=1
+=======
+                    if is_valid_move(selected_piece, selected_pos, (col, row)):
+                        board[row][col] = selected_piece
+                        board[selected_pos[1]][selected_pos[0]] = None
+>>>>>>> 12ffb7795a8b4fb2270db38b79c474ffb9d15ae1
                     selected_piece = None
                     selected_pos = None
 
@@ -142,6 +164,10 @@ def main():
 
     pygame.quit()
     sys.exit()
+<<<<<<< HEAD
     print(pgn)
+=======
+
+>>>>>>> 12ffb7795a8b4fb2270db38b79c474ffb9d15ae1
 if __name__ == "__main__":
     main()
