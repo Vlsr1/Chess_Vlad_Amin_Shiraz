@@ -11,6 +11,9 @@ WINDOW_SIZE = (WIDTH, HEIGHT)
 # Размеры клетки
 CELL_SIZE = WIDTH // 8
 
+# Алфавит
+alph=('a','b','c','d','e','f','g','h')
+
 # Цвета
 WHITE = (236, 218, 185)
 BLACK = (174, 138, 104)
@@ -49,10 +52,12 @@ board = [
 ]
 
 # Логика передвижения фигур
-def is_valid_move(piece, start, end):
+def is_valid_move(piece, start, end,side):
     sx, sy = start
     ex, ey = end
     if piece == 'P':
+        if side=='BLACK':
+            return False
         if sx == ex and sy == 6 and ey == 4:
             return True
         if sx == ex and sy - ey==1:
@@ -60,6 +65,8 @@ def is_valid_move(piece, start, end):
         if abs(sx - ex) == 1 and (sy - ey) == 1 and board[ey][ex]!=None:
             return True
     elif piece == 'p':
+        if side=='WHITE':
+            return False
         if sx == ex and sy == 1 and ey == 3:
             return True
         if sx == ex and ey - sy == 1:
@@ -100,6 +107,9 @@ def main():
     selected_piece = None
     selected_pos = None
     running = True
+    pgn=()
+    move_number=int(1)
+    side='WHITE'
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -112,9 +122,16 @@ def main():
                         selected_piece = board[row][col]
                         selected_pos = (col, row)
                 else:
-                    if is_valid_move(selected_piece, selected_pos, (col, row)):
+                    if is_valid_move(selected_piece, selected_pos, (col, row),side):
                         board[row][col] = selected_piece
                         board[selected_pos[1]][selected_pos[0]] = None
+                        pgn+=(move_number, alph[selected_pos[0]],8-selected_pos[1],  ' ',alph[col], 8-row)
+                        print(pgn)
+                        if (side=='WHITE'):
+                            side='BLACK'
+                        elif(side=='BLACK'):
+                            side='WHITE'
+                            move_number+=1
                     selected_piece = None
                     selected_pos = None
 
@@ -125,6 +142,6 @@ def main():
 
     pygame.quit()
     sys.exit()
-
+    print(pgn)
 if __name__ == "__main__":
     main()
