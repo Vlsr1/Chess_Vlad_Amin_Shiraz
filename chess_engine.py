@@ -16,8 +16,9 @@ WINDOW_SIZE = (WIDTH, HEIGHT)
 CELL_SIZE = WIDTH // 8
 
 # Алфавит
-alph = ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
+ALPHABET = ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h')
 
+# Цвета
 WHITE = (236, 218, 185)
 BLACK = (174, 138, 104)
 GREEN = (0, 255, 0)
@@ -27,7 +28,7 @@ screen = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption("Chess")
 
 # Загрузка изображений фигур
-pieces = {
+PIECES = {
     'K': pygame.image.load('images/white_king.png'),
     'Q': pygame.image.load('images/white_queen.png'),
     'R': pygame.image.load('images/white_rook.png'),
@@ -43,13 +44,16 @@ pieces = {
 }
 
 def load_pgn_file(pgn_file):
+    """Load a PGN file and return the game."""
     with open(pgn_file) as pgn:
         return chess.pgn.read_game(pgn)
 
 def initialize_engine(engine_path):
+    """Initialize the chess engine."""
     return chess.engine.SimpleEngine.popen_uci(engine_path)
 
 def analyze_pgn(pgn_file, engine_path, depth):
+    """Analyze a PGN file using the chess engine."""
     game = load_pgn_file(pgn_file)
     engine = initialize_engine(engine_path)
     board = game.board()
@@ -63,48 +67,68 @@ def analyze_pgn(pgn_file, engine_path, depth):
         score = info["score"].relative.score() / 100.0
         if not board.turn:
             score = -score
-        advantage = 'Equal' if -0.3 < score < 0.3 else 'White' if score > 0 else 'Black'
+        if -0.3 < score < 0.3:
+            advantage = 'Equal'
+        elif score > 0:
+            advantage ='White' 
+        else:
+            advantage ='Black'
         move_info.append((move_number, piece_name, move, score, advantage))
-        if not board.turn:
+        if  board.turn:
             move_number += 1
 
     engine.quit()
     return move_info
 
 def print_move_info(move_info):
+    """Print the move information."""
     for info in move_info:
         move_number, piece_name, move, score, advantage = info
-        print(f"Move {move_number}: {piece_name} {move}, Score: {score:.2f}, Advantage: {advantage}")
+        print(f"Move {move_number}: {piece_name} {move},\
+        Score: {score:.2f}, Advantage: {advantage}")
 
 def draw_board():
+    """Draw the chess board."""
     for row in range(8):
         for col in range(8):
             color = WHITE if (row + col) % 2 == 0 else BLACK
-            pygame.draw.rect(screen, color, (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+            pygame.draw.rect(screen, color, (
+                col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
 def draw_pieces(board):
+    """Draw the chess pieces on the board."""
     for row in range(8):
         for col in range(8):
             piece = board.piece_at(chess.square(col, 7 - row))
             if piece:
-                screen.blit(pieces[piece.symbol()], (col * CELL_SIZE, row * CELL_SIZE))
+                screen.blit(PIECES[piece.symbol()],
+                    (col * CELL_SIZE, row * CELL_SIZE))
 
 def draw_arrow(start_square, end_square):
-    start_col, start_row = chess.square_file(start_square), 7 - chess.square_rank(start_square)
-    end_col, end_row = chess.square_file(end_square), 7 - chess.square_rank(end_square)
-    start_pos = (start_col * CELL_SIZE + CELL_SIZE // 2, start_row * CELL_SIZE + CELL_SIZE // 2)
-    end_pos = (end_col * CELL_SIZE + CELL_SIZE // 2, end_row * CELL_SIZE + CELL_SIZE // 2)
+    """Draw an arrow from start_square to end_square."""
+    start_col = chess.square_file(start_square)
+    start_row = 7 - chess.square_rank(start_square)
+    end_col =  chess.square_file(end_square)
+    end_row = 7 - chess.square_rank(end_square)
+    start_pos = (start_col * CELL_SIZE + CELL_SIZE // 2,
+        start_row * CELL_SIZE + CELL_SIZE // 2)
+    end_pos = (end_col * CELL_SIZE + CELL_SIZE // 2,
+        end_row * CELL_SIZE + CELL_SIZE // 2)
 
     pygame.draw.line(screen, GREEN, start_pos, end_pos, 5)
     arrow_length = 20
-    angle = math.atan2(end_pos[1] - start_pos[1], end_pos[0] - start_pos[0])
+    angle = math.atan2(end_pos[1] - start_pos[1],
+        end_pos[0] - start_pos[0])
     arrow_head = (
         end_pos[0] - arrow_length * math.cos(angle - math.pi / 6),
         end_pos[1] - arrow_length * math.sin(angle - math.pi / 6)
     )
-    pygame.draw.polygon(screen, GREEN, [end_pos, arrow_head, (end_pos[0] - arrow_length * math.cos(angle + math.pi / 6), end_pos[1] - arrow_length * math.sin(angle + math.pi / 6))])
+    pygame.draw.polygon(screen, GREEN, [end_pos, arrow_head, (end_pos[0] - 
+        arrow_length * math.cos(angle + math.pi / 6),
+        end_pos[1] - arrow_length * math.sin(angle + math.pi / 6))])
 
 def show_position_and_best_move(engine_path, move_info, depth):
+    """Show the position and the best move for a given move number."""
     engine = initialize_engine(engine_path)
     while True:
         move_number = int(input("Введите номер хода для отображения позиции и лучшего хода: "))
@@ -149,6 +173,7 @@ def show_position_and_best_move(engine_path, move_info, depth):
                     print("Неверный ввод. Пожалуйста, попробуйте снова.")
 
 def main():
+    """Main function to run the chess analysis program."""
     while True:
         pgn_filename = input("Введите название PGN файла (без расширения) или 'exit' для выхода: ")
         if pgn_filename.lower() == 'exit':
