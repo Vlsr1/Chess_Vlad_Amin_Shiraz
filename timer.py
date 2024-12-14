@@ -6,7 +6,7 @@ pygame.init()
 
 # Константы
 SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 300
+SCREEN_HEIGHT = 500
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 FONT_SIZE = 48
@@ -28,11 +28,21 @@ time_player2 = 900  # 15 минут
 current_player = 1
 running = False
 
+# Тип добавления времени
+increment_type = "none"  # "none", "fischer", "bronstein"
+increment_value = 0  # Время добавления в секундах
+
 # Функция для форматирования времени
 def format_time(seconds):
     minutes = seconds // 60
     seconds = seconds % 60
     return f"{minutes:02}:{seconds:02}"
+
+# Ввод настроек через консоль
+print("Enter the increment type (none, fischer, bronstein):")
+increment_type = input().strip().lower()
+print("Enter the increment value (in seconds):")
+increment_value = int(input().strip())
 
 # Основной цикл
 while True:
@@ -46,10 +56,18 @@ while True:
                 if current_player != 1:
                     current_player = 1
                     running = True
+                    if increment_type == "fischer":
+                        time_player1 += increment_value
+                    elif increment_type == "bronstein":
+                        time_player1 += increment_value // 2
             elif 450 <= mouse_x <= 450 + BUTTON_WIDTH and 200 <= mouse_y <= 200 + BUTTON_HEIGHT:
                 if current_player != 2:
                     current_player = 2
                     running = True
+                    if increment_type == "fischer":
+                        time_player2 += increment_value
+                    elif increment_type == "bronstein":
+                        time_player2 += increment_value // 2
 
     if running:
         if current_player == 1:
